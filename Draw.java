@@ -1,6 +1,7 @@
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Random;
 
@@ -9,21 +10,16 @@ public class Draw extends JPanel {
     private static final int BOX_WIDTH = 640;
     private static final int BOX_HEIGHT = 480;
 
+
     // Fields
-    private int ballRadius;
-    private int speedX;
-    private int speedY;
-    private int ballX;
-    private int ballY;
     private static final int UPDATE_RATE = 30; // Number of refresh per second
 
-    public Draw(int size, int speedX, int speedY) {
-        this.ballRadius = size; // Ball's radius
-        this.ballX = this.ballRadius + 50; // Ball's center (x, y)
-        this.ballY = this.ballRadius + 20;
-        this.speedX = speedX;
-        this.speedY = speedY;
-
+    // Balls 
+    private Ball[] ballList;
+    private static final int BALL_COUNT = 20;
+    
+    public Draw() {
+        this.ballList = createBallList(BALL_COUNT);
         this.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
 
         Thread gameThread = new Thread() {
@@ -35,39 +31,13 @@ public class Draw extends JPanel {
         gameThread.start();
     }
 
-    public void updatePosition(int x, int y, int boxWidth, int boxHeight) {
-        // Update position
-        x += speedX;
-        y += speedY;
-
-        // Check boundaries and adjust
-        if (x - ballRadius < 0) {
-            speedX = -speedX;
-            x = ballRadius;
-        } else if (x + ballRadius > boxWidth) {
-            speedX = -speedX;
-            x = boxWidth - ballRadius;
+    public Ball[] createBallList(int count){
+        Ball[] balls = new Ball[BALL_COUNT];
+        for (int i = 0; i < BALL_COUNT; i++) {
+            // Create a new Ball instance
+            balls[i] = new Ball(BOX_WIDTH, BOX_HEIGHT);
         }
-
-        if (y - ballRadius < 0) {
-            speedY = -speedY;
-            y = ballRadius;
-        } else if (y + ballRadius > boxHeight) {
-            speedY = -speedY;
-            y = boxHeight - ballRadius;
-        }
-
-        ballX = x;
-        ballY = y;
-
-    }
-
-    private Color generateRandomColor() {
-        Random random = new Random();
-        int red = random.nextInt(256);
-        int green = random.nextInt(256);
-        int blue = random.nextInt(256);
-        return new Color(red, green, blue);
+        return balls;
     }
 
     /** Custom rendering codes for drawing the JPanel */
@@ -79,21 +49,21 @@ public class Draw extends JPanel {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, BOX_WIDTH, BOX_HEIGHT);
 
-        paintBall(g);
+        for (int i = 0; i < BALL_COUNT; i++) {
+            ballList[i].updatePosition();
+            paintBall(g,ballList[i]);
+            }
     }
 
-    public void paintBall(Graphics g) {
-
+    public void paintBall(Graphics g, Ball b) {
         // Draw the ball
-        g.setColor(generateRandomColor());
-        g.fillOval((int) (ballX - ballRadius), (int) (ballY - ballRadius),
-        (int) (2 * ballRadius), (int) (2 * ballRadius));
+        g.setColor(b.getColor());
+        g.fillOval((int) (b.getX() - b.getRadius()), (int) (b.getY() - b.getRadius()),
+        (int) (2 * b.getRadius()), (int) (2 * b.getRadius()));
     }
 
     public void bouncingBalls(){
-
         while(true) {
-            updatePosition(ballX, ballY, BOX_WIDTH, BOX_HEIGHT);
             // Refresh the display
             repaint(); // Callback paintComponent()
             // Delay for timing control and give other threads a chance
@@ -102,6 +72,4 @@ public class Draw extends JPanel {
             } catch (InterruptedException ex) { }
         }
     }
-
-
 }
