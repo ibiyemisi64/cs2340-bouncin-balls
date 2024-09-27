@@ -1,20 +1,28 @@
-import javax.swing.JFrame;
-
+import javax.swing.*;
 
 public class BouncingBallsByYem {
-   public static void main(String[] args) {
-    // Run GUI in the Event Dispatcher Thread (EDT) instead of main thread.
 
-    Draw draw = new Draw(20, 2, 3);
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-       public void run() {
-          // Set up main window (using Swing's Jframe)
-          JFrame frame = new JFrame("Yemisi's Bouncing Balls");
-          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-          frame.setContentPane(draw);
-          frame.pack();
-          frame.setVisible(true);
-       }
-    });
- }
+    /********************************************************************************/
+    /*                                                                              */
+    /*  Bouncing Balls Game by Yem!                                                 */
+    /*  Version: 1.0                                                                */
+    /*  Date: 9/26/2024                                                             */
+    /*  Author: Yemisi Gbenebor                                                     */
+    /*                                                                              */
+    /********************************************************************************/
+
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                BallGame draw = new BallGame();
+
+                JFrame frame = new JFrame("Yemisi's Bouncing Balls");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setContentPane(draw);
+                frame.pack();
+                frame.setSize(640, 480);
+                frame.setVisible(true);
+            }
+        });
+    }
 }
