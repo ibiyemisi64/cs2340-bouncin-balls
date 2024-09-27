@@ -2,6 +2,14 @@ import java.awt.*;
 import java.util.Random;
 
 public class Ball {
+    /********************************************************************************/
+    /*                                                                              */
+    /*  Ball                                                                        */
+    /*  Version: 1.0                                                                */
+    /*  Date: 9/26/2024                                                             */
+    /*  Author: Yemisi Gbenebor                                                     */
+    /*                                                                              */
+    /********************************************************************************/
 
     public int ballX;
     public int ballY;
@@ -22,7 +30,6 @@ public class Ball {
     }
 
     private Color generateRandomBlue() {
-
         Color[] shadesOfBlues = new Color[4];
         shadesOfBlues[0] = new Color(173, 216, 230); // Light Blue
         shadesOfBlues[1] = new Color(135, 206, 250); // Light Sky Blue
@@ -54,7 +61,7 @@ public class Ball {
 
     @Override
     public String toString() {
-        return "Ball{" + "x='" + this.ballX + ", y=" + this.ballY + " color='" + this.color.toString() + '\'' + '}';
+        return "Ball{" + "x='" + this.ballX + ", y=" + this.ballY + ", color='" + this.color.toString() + '\'' + '}';
     }
 
 }
