@@ -2,93 +2,59 @@ import java.awt.*;
 import java.util.Random;
 
 public class Ball {
-    
-    private int ballRadius;
-    private int ballX;
-    private int ballY;
-    private int speedX;
-    private int speedY;
-    private int boxHeight;
-    private int boxWidth;
-    private Color ballColor;
 
-    public Ball(int BOX_WIDTH, int BOX_HEIGHT){
+    public int ballX;
+    public int ballY;
+    public int speedX;
+    public int speedY;
+    private boolean visible;
+    public Color color;
+    private int ballRadius = 60;
+
+    public Ball(int boxX, int boxY) {
         Random random = new Random();
-        this.ballRadius = 20;
-        this.ballX = random.nextInt(BOX_WIDTH - (this.getRadius() * 2)) + this.getRadius();
-        this.ballY = random.nextInt(BOX_HEIGHT - (this.getRadius() * 2)) + this.getRadius();
-        this.ballColor = generateRandomColor();
-        this.speedX = 2;
-        this.speedY = 3;
-        this.boxHeight = BOX_HEIGHT;
-        this.boxWidth = BOX_WIDTH;
+        this.ballX = random.nextInt(boxX);
+        this.ballY = random.nextInt(boxY);
+        this.speedX = random.nextInt(5); // adjusted baseline so speeds aren't too slow
+        this.speedY = random.nextInt(3);
+        this.visible = true;
+        this.color = generateRandomBlue();
     }
 
-    // private Color generateRandomColor() {
-    //     Random random = new Random();
-    //     int red = random.nextInt(256);
-    //     int green = random.nextInt(256);
-    //     int blue = random.nextInt(256);
-    //     return new Color(red, green, blue);
-    // }
-    
-    private Color generateRandomColor() {
-        // Ensure intensity is between 0 and 255
+    private Color generateRandomBlue() {
+
+        Color[] shadesOfBlues = new Color[4];
+        shadesOfBlues[0] = new Color(173, 216, 230); // Light Blue
+        shadesOfBlues[1] = new Color(135, 206, 250); // Light Sky Blue
+        shadesOfBlues[2] = new Color(176, 224, 230); // Powder Blue
+        shadesOfBlues[3] = new Color(0, 0, 255); // Blue
+
         Random random = new Random();
-        int intensity = random.nextInt(256);
-        int red = intensity;     // Red component (0 to 255)
-        int green = 0;           // Green component (fixed at 0)
-        int blue = 255 - (intensity/5); // Blue component (inversely related to red)
-        return new Color(red, green, blue);
+        int i = random.nextInt(4);
+
+        return shadesOfBlues[i];
     }
-
-
-    
 
     public Color getColor() {
-        return ballColor;
+        return this.color;
     }
 
     public int getRadius() {
-        return ballRadius;
+        return this.ballRadius;
     }
 
-    public int getX() {
-        return ballY;
+    public boolean getVisibility() {
+        return this.visible;
     }
 
-    public int getY() {
-        return ballX;
-    }
-
-    public void updatePosition() {
-        // Update position
-        
-        ballX += speedX;
-        ballY += speedY;
-
-        // Check boundaries and adjust
-        if (ballX - ballRadius < 0) {
-            speedX = -speedX;
-            ballX = ballRadius;
-        } else if (ballX + ballRadius >= boxWidth) {
-            speedX = -speedX;
-            ballX = boxWidth - ballRadius;
-        }
-
-        if (ballY - ballRadius < 0) {
-            speedY = -speedY;
-            ballY = ballRadius;
-        } else if (ballY + ballRadius >= boxHeight) {
-            speedY = -speedY;
-            ballY = boxHeight - ballRadius;
-        }
+    public boolean setVisibility(boolean v) {
+        visible = v;
+        return visible;
     }
 
     @Override
     public String toString() {
-        return "Ball{" + "x='" + ballX + ", y="+ ballY + " color='" + ballColor.toString() + '\'' + '}';
+        return "Ball{" + "x='" + this.ballX + ", y=" + this.ballY + " color='" + this.color.toString() + '\'' + '}';
     }
 
 }
-

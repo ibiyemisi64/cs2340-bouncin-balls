@@ -1,19 +1,25 @@
-import javax.swing.JFrame;
-
+import javax.swing.*;
 
 public class BouncingBallsByYem {
-   public static void main(String[] args) {
-    // Run GUI in the Event Dispatcher Thread (EDT) instead of main thread.
 
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-       public void run() {
-          // Set up main window (using Swing's Jframe)
-          JFrame frame = new JFrame("Yemisi's Bouncing Balls");
-          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-          frame.setContentPane(new Draw());
-          frame.pack();
-          frame.setVisible(true);
-       }
-    });
- }
+   /*
+    * Main program to run Bouncing Balls program.
+    */
+   public static void main(String[] args) {
+
+      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+         public void run() {
+
+            BallGame draw = new BallGame();
+
+            JFrame frame = new JFrame("Yemisi's Bouncing Balls");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setContentPane(draw);
+            frame.pack();
+            frame.setVisible(true);
+            frame.setSize(640, 480);
+
+         }
+      });
+   }
 }
