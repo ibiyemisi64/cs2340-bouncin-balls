@@ -1,5 +1,18 @@
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+/********************************************************************************
+ *                                                                              *
+ *  Copyright (c) 2024 Ibiyemisi Gbenebor                                      *
+ *                                                                              *
+ *  All rights reserved.                                                        *
+ *                                                                              *
+ *  This software is provided "as is", without any express or implied warranty, *
+ *  including but not limited to the warranties of merchantability, fitness for *
+ *  a particular purpose, and noninfringement. In no event shall the authors    *
+ *  or copyright holders be liable for any claim, damages, or other liability,  *
+ *  whether in an action of contract, tort, or otherwise, arising from, out of, *
+ *  or in connection with the software or the use or other dealings in the       *
+ *  software.                                                                   *
+ *                                                                              *
+ ********************************************************************************/
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,19 +21,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import javax.swing.*;
 
 public class BallGame extends JPanel {
 
-    /********************************************************************************/
-    /*                                                                              */
-    /* BallGame Class */
-    /* Version: 1.0 */
-    /* Date: 9/26/2024 */
-    /* Author: Yemisi Gbenebor */
-    /*                                                                              */
-    /********************************************************************************/
-
-    // Number of refresh per second
     private static final int UPDATE_RATE = 30;
     private ArrayList<Ball> ballList;
     private int userScore = 0;
@@ -36,37 +40,9 @@ public class BallGame extends JPanel {
 
         setBackground(new Color(210, 180, 140));
         setPreferredSize(new Dimension(640, 480)); // Set default size
+
         add(userScoreLabel);
         add(AIScoreLabel);
-
-        Thread gameThread = new Thread() {
-            public void run() {
-                bouncingBalls();
-            }
-        };
-
-        Thread aiThread = new Thread() {
-            public void run() {
-                while (true) {
-                    if (!ballList.isEmpty()) {
-                        // Select a random ball and "click" on it
-                        Ball randomBall = ballList.get(random.nextInt(ballList.size()));
-                        removeBall(randomBall.x, randomBall.y, false);
-                    }
-
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
-                        // Handle exception if needed
-                    }
-
-                }
-            }
-        };
-
-        aiThread.start();
-
-        gameThread.start();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -74,10 +50,28 @@ public class BallGame extends JPanel {
                 removeBall(e.getX(), e.getY(), true);
             }
         });
+
+        Thread gameThread = new Thread() {
+            public void run() {
+                game();
+            }
+        };
+
+        gameThread.start();
     }
 
-    /** Create list to store balls running in the JPanel */
-    public ArrayList<Ball> createBallList(int count) {
+    @Override
+    public void paintComponent(Graphics g) {
+
+        for (int i = 0; i < ballList.size(); i++) {
+            Ball b = ballList.get(i);
+            g.setColor(b.getColor());
+            g.fillOval((int) (b.getPosX() - b.getRadius()), (int) (b.getPosY() - b.getRadius()),
+                    (int) (2 * b.getRadius()), (int) (2 * b.getRadius()));
+        }
+    }
+
+    private ArrayList<Ball> createBallList(int count) {
         ArrayList<Ball> balls = new ArrayList<Ball>();
 
         for (int i = 0; i < count; i++) {
@@ -86,24 +80,12 @@ public class BallGame extends JPanel {
 
         return balls;
     }
-
-    /** Custom rendering codes for drawing the JPanel and Balls */
-    @Override
-    public void paintComponent(Graphics g) {
-
-        for (int i = 0; i < ballList.size(); i++) {
-            Ball b = ballList.get(i);
-            g.setColor(b.getColor());
-            g.fillOval((int) (b.x - b.getRadius()), (int) (b.y - b.getRadius()),
-                    (int) (2 * b.getRadius()), (int) (2 * b.getRadius()));
-        }
-    }
-
-    public void removeBall(int mouseX, int mouseY, boolean isUserMouseClick) {
+    
+    public synchronized void removeBall(int mouseX, int mouseY, boolean isUserMouseClick) {
         Iterator<Ball> iterator = ballList.iterator();
         while (iterator.hasNext()) {
             Ball b = iterator.next();
-            if (Math.sqrt(Math.pow(mouseX - b.x, 2) + Math.pow(mouseY - b.y, 2)) <= b.getRadius()) {
+            if (Math.sqrt(Math.pow(mouseX - b.getPosX(), 2) + Math.pow(mouseY - b.getPosY(), 2)) <= b.getRadius()) {
                 iterator.remove();
                 if (isUserMouseClick) {
                     userScore++;
@@ -118,27 +100,46 @@ public class BallGame extends JPanel {
         }
     }
 
-    public String getUserScore() {
+    private String getUserScore() {
         return "Your Score: " + this.userScore;
     }
 
-    public String getAIScore() {
+    private String getAIScore() {
         return "AI Score: " + this.AIScore;
     }
 
-    /* Main loops to keep bouncing balls window open and balls moving */
-    public void bouncingBalls() {
+    public ArrayList<Ball> getBallList() {
+        return this.ballList;
+    }
+
+    /* loops to keep bouncing balls window open and balls moving */
+    private void game() {
         while (!ballList.isEmpty()) {
             for (int i = 0; i < ballList.size(); i++) {
                 ballList.get(i).updateBallPosition(getWidth(), getHeight());
                 repaint();
             }
             try {
-                Thread.sleep(1000 / UPDATE_RATE); // milliseconds
-            } catch (InterruptedException ex) {
-                // Handle exception if needed
+                Thread.sleep(1000 / UPDATE_RATE);
+            } catch (Exception e) {
+                System.out.println(e);
             }
         }
-    }
 
+        // Post winner results and close the JFrame when the ball list is empty
+        SwingUtilities.invokeLater(() -> {
+            if (userScore > AIScore) {
+                JOptionPane.showMessageDialog(this, "You win with a score of " + userScore + "!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            } else if (AIScore > userScore) {
+                JOptionPane.showMessageDialog(this, "AI wins with a score of " + AIScore + "!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "It's a tie with both scoring " + userScore + "!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (topFrame != null) {
+                topFrame.dispose();
+            }
+        });
+    }
 }
