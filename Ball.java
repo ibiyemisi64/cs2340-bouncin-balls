@@ -11,35 +11,29 @@ public class Ball {
     /*                                                                              */
     /********************************************************************************/
 
-    public int ballX;
-    public int ballY;
-    public int speedX;
-    public int speedY;
+    public int x;
+    public int y;
+    public int dx;
+    public int dy;
     private boolean visible;
     public Color color;
-    private int ballRadius = 60;
+    private int ballRadius = 30;
+
+    Color[] shadesOfBlue = new Color[]{
+        new Color(173, 216, 230), // Light Blue
+        new Color(135, 206, 250), // Light Sky Blue
+        new Color(176, 224, 230), // Powder Blue
+        new Color(0, 0, 255)      // Blue
+    };
 
     public Ball(int boxX, int boxY) {
         Random random = new Random();
-        this.ballX = random.nextInt(boxX);
-        this.ballY = random.nextInt(boxY);
-        this.speedX = random.nextInt(5); // adjusted baseline so speeds aren't too slow
-        this.speedY = random.nextInt(3);
+        this.x = random.nextInt(boxX);
+        this.y = random.nextInt(boxY);
+        this.dx = random.nextInt(5) + 2; // adjusted baseline so speeds aren't too slow
+        this.dy = random.nextInt(3) + 2;
         this.visible = true;
-        this.color = generateRandomBlue();
-    }
-
-    private Color generateRandomBlue() {
-        Color[] shadesOfBlues = new Color[4];
-        shadesOfBlues[0] = new Color(173, 216, 230); // Light Blue
-        shadesOfBlues[1] = new Color(135, 206, 250); // Light Sky Blue
-        shadesOfBlues[2] = new Color(176, 224, 230); // Powder Blue
-        shadesOfBlues[3] = new Color(0, 0, 255); // Blue
-
-        Random random = new Random();
-        int i = random.nextInt(4);
-
-        return shadesOfBlues[i];
+        this.color = shadesOfBlue[random.nextInt(4)];
     }
 
     public Color getColor() {
@@ -59,9 +53,25 @@ public class Ball {
         return visible;
     }
 
+    public void updateBallPosition(int boxX, int boxY) {
+        // Update position;
+
+        // Check boundaries and adjust
+        if (x - ballRadius < 0 || x + ballRadius > boxX) {
+            dx = -dx;
+        }
+
+        if (y - ballRadius < 0 || y + ballRadius > boxY) {
+            dy = -dy;
+        }
+
+        x += dx;
+        y += dy;
+    }
+
     @Override
     public String toString() {
-        return "Ball{" + "x='" + this.ballX + ", y=" + this.ballY + ", color='" + this.color.toString() + '\'' + '}';
+        return "Ball{" + "x='" + this.x + ", y=" + this.y + ", color='" + this.color.toString() + '\'' + '}';
     }
 
 }
