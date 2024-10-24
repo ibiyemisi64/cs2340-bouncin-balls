@@ -6,6 +6,7 @@ The Bouncing Balls Game is an interactive Java application where players can cli
 ## Features
 - **Dynamic Gameplay**: The balls bounce around the screen, making it a fun and engaging experience.
 - **Score Tracking**: Each time a ball is clicked, the score increases.
+- **Ai Player**: Compete against an AI agent that is also clicking balls.
 - **Colorful Graphics**: Balls are displayed in various shades of blue, adding visual appeal to the game.
 
 ## Requirements

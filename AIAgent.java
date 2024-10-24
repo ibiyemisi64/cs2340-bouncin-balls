@@ -1,3 +1,4 @@
+
 /********************************************************************************
  *                                                                              *
  *  Copyright (c) 2024 Ibiyemisi Gbenebor                                      *
@@ -14,26 +15,40 @@
  *                                                                              *
  ********************************************************************************/
 
-import javax.swing.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Random;
 
-public class BouncingBallsByYem {
+public class AIAgent implements Runnable {
 
-    public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                BallGame game = new BallGame();
+    BallGame game;
+    Random random = new Random();
 
-                JFrame frame = new JFrame("Yemisi's Bouncing Balls");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setContentPane(game);
-                frame.pack();
-                frame.setSize(640, 480);
-                frame.setVisible(true);
-
-                AIAgent aiAgent = new AIAgent(game);
-                Thread aiThread = new Thread(aiAgent);
-                aiThread.start();
-            }
-        });
+    public AIAgent(BallGame g) {
+        game = g;
     }
+
+    @Override
+    public void run() {
+
+        ArrayList<Ball> balls = game.getBallList();
+        
+        /* loops to keep AI agent clicking balls */
+        while (!balls.isEmpty()) {
+
+            //  ball "click"
+            Ball randomBall = balls.get(random.nextInt(balls.size()));
+            game.removeBall(randomBall.getPosX(), randomBall.getPosY(), false);
+        
+
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
+        }
+
+    }
+
 }
