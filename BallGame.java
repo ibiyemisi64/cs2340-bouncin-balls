@@ -13,10 +13,10 @@ public class BallGame extends JPanel {
 
     /********************************************************************************/
     /*                                                                              */
-    /*  BallGame Class                                                              */
-    /*  Version: 1.0                                                                */
-    /*  Date: 9/26/2024                                                             */
-    /*  Author: Yemisi Gbenebor                                                     */
+    /* BallGame Class */
+    /* Version: 1.0 */
+    /* Date: 9/26/2024 */
+    /* Author: Yemisi Gbenebor */
     /*                                                                              */
     /********************************************************************************/
 
@@ -34,7 +34,8 @@ public class BallGame extends JPanel {
         this.userScoreLabel = new JLabel(getUserScore());
         this.AIScoreLabel = new JLabel(getAIScore());
 
-
+        setBackground(new Color(210, 180, 140));
+        setPreferredSize(new Dimension(640, 480)); // Set default size
         add(userScoreLabel);
         add(AIScoreLabel);
 
@@ -50,7 +51,7 @@ public class BallGame extends JPanel {
                     if (!ballList.isEmpty()) {
                         // Select a random ball and "click" on it
                         Ball randomBall = ballList.get(random.nextInt(ballList.size()));
-                        handleMouseClick(randomBall.x, randomBall.y, false);
+                        removeBall(randomBall.x, randomBall.y, false);
                     }
 
                     try {
@@ -58,7 +59,7 @@ public class BallGame extends JPanel {
                     } catch (InterruptedException ex) {
                         // Handle exception if needed
                     }
-                
+
                 }
             }
         };
@@ -70,7 +71,7 @@ public class BallGame extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                handleMouseClick(e.getX(), e.getY(), true);
+                removeBall(e.getX(), e.getY(), true);
             }
         });
     }
@@ -79,7 +80,7 @@ public class BallGame extends JPanel {
     public ArrayList<Ball> createBallList(int count) {
         ArrayList<Ball> balls = new ArrayList<Ball>();
 
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             balls.add(new Ball(640, 480));
         }
 
@@ -89,34 +90,22 @@ public class BallGame extends JPanel {
     /** Custom rendering codes for drawing the JPanel and Balls */
     @Override
     public void paintComponent(Graphics g) {
-        Color tan = new Color(210, 180, 140);
-        setBackground(tan);
-        setPreferredSize(new Dimension(640, 480)); // Set default size
 
         for (int i = 0; i < ballList.size(); i++) {
-            // Only paint balls in visible state
-            if (ballList.get(i).getVisibility()) {
-                paintBall(g, ballList.get(i));
-            }
+            Ball b = ballList.get(i);
+            g.setColor(b.getColor());
+            g.fillOval((int) (b.x - b.getRadius()), (int) (b.y - b.getRadius()),
+                    (int) (2 * b.getRadius()), (int) (2 * b.getRadius()));
         }
     }
 
-    /** Helper for rendering codes for drawing the Balls */
-    public void paintBall(Graphics g, Ball b) {
-        g.setColor(b.getColor());
-        g.fillOval((int) (b.x - b.getRadius()), (int) (b.y - b.getRadius()),
-                (int) (2 * b.getRadius()), (int) (2 * b.getRadius()));
-    }
-
-    public void handleMouseClick(int mouseX, int mouseY, boolean isUser) {
-
+    public void removeBall(int mouseX, int mouseY, boolean isUserMouseClick) {
         Iterator<Ball> iterator = ballList.iterator();
         while (iterator.hasNext()) {
             Ball b = iterator.next();
             if (Math.sqrt(Math.pow(mouseX - b.x, 2) + Math.pow(mouseY - b.y, 2)) <= b.getRadius()) {
-                b.setVisibility(false);
                 iterator.remove();
-                if (isUser) {
+                if (isUserMouseClick) {
                     userScore++;
                     userScoreLabel.setText(getUserScore());
                 } else {
@@ -124,8 +113,7 @@ public class BallGame extends JPanel {
                     AIScoreLabel.setText(getAIScore());
                 }
                 repaint();
-
-                break;
+                return;
             }
         }
     }
